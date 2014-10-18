@@ -39,6 +39,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 require_once('include/SugarObjects/templates/person/Person.php');
+require_once('PasswordHash.php');
 
 // User is used to store customer information.
 class User extends Person {
@@ -709,7 +710,7 @@ EOQ;
 	 */
 	public static function getPasswordHash($password)
 	{
-	    if(!defined('CRYPT_MD5') || !constant('CRYPT_MD5')) {
+	    /*if(!defined('CRYPT_MD5') || !constant('CRYPT_MD5')) {
 	        // does not support MD5 crypt - leave as is
 	        if(defined('CRYPT_EXT_DES') && constant('CRYPT_EXT_DES')) {
 	            return crypt(strtolower(md5($password)),
@@ -719,7 +720,9 @@ EOQ;
 	        // fall back to old md5
 	        return strtolower(md5($password));
 	    }
-	    return crypt(strtolower(md5($password)));
+	    return crypt(strtolower(md5($password)));*/
+	    $p_hasher = new PasswordHash(8, FALSE);
+	    return $p_hasher->HashPassword(md5($password));
 	}
 
 	/**
@@ -740,12 +743,14 @@ EOQ;
 	 */
 	public static function checkPasswordMD5($password_md5, $user_hash)
 	{
-	    if(empty($user_hash)) return false;
+	    /*if(empty($user_hash)) return false;
 	    if($user_hash[0] != '$' && strlen($user_hash) == 32) {
 	        // Old way - just md5 password
 	        return strtolower($password_md5) == $user_hash;
 	    }
-	    return crypt(strtolower($password_md5), $user_hash) == $user_hash;
+	    return crypt(strtolower($password_md5), $user_hash) == $user_hash;*/
+	    $p_hasher = new PasswordHash(8, FALSE);
+	    return $p_hasher->CheckPassword($password_md5, $user_hash);
 	}
 
 	/**
